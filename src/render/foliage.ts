@@ -77,13 +77,13 @@ for (const urls of Object.values(MODEL_URLS)) {
 // Desaturated biome tints riding instanceColor. The textured models carry
 // their own hue, so tints are lerped most of the way to white before use
 // (raw tints multiply into the albedo and read as grime).
-const PINE_TINT: Record<BiomeId, number> = { vale: 0x9bb48d, marsh: 0x87966b, peaks: 0x6f8a7a };
-const OAK_TINT: Record<BiomeId, number> = { vale: 0xa7b886, marsh: 0x8d9865, peaks: 0x92a37f };
-const ROCK_TINT: Record<BiomeId, number> = { vale: 0x8d8d85, marsh: 0x565c4e, peaks: 0x878e99 };
-const TRUNK_TINT: Record<BiomeId, number> = { vale: 0xffffff, marsh: 0xd2d8bc, peaks: 0xd9dde4 };
-const GRASS_TINT: Record<BiomeId, number> = { vale: 0xdde4c0, marsh: 0xbfc492, peaks: 0xc2cec8 };
+const PINE_TINT: Record<BiomeId, number> = { vale: 0x9bb48d, steppe: 0xb5a66d, marsh: 0x87966b, peaks: 0x6f8a7a };
+const OAK_TINT: Record<BiomeId, number> = { vale: 0xa7b886, steppe: 0xbda96a, marsh: 0x8d9865, peaks: 0x92a37f };
+const ROCK_TINT: Record<BiomeId, number> = { vale: 0x8d8d85, steppe: 0x9a8b73, marsh: 0x565c4e, peaks: 0x878e99 };
+const TRUNK_TINT: Record<BiomeId, number> = { vale: 0xffffff, steppe: 0xd8c19b, marsh: 0xd2d8bc, peaks: 0xd9dde4 };
+const GRASS_TINT: Record<BiomeId, number> = { vale: 0xdde4c0, steppe: 0xc9b36b, marsh: 0xbfc492, peaks: 0xc2cec8 };
 const SWAMP_CANOPY_TINT = 0x7e8b58;
-const DRESS_TINT: Record<BiomeId, number> = { vale: 0xaebf8e, marsh: 0x8d9865, peaks: 0x93a78f };
+const DRESS_TINT: Record<BiomeId, number> = { vale: 0xaebf8e, steppe: 0xbca367, marsh: 0x8d9865, peaks: 0x93a78f };
 // how far tints collapse toward white (1 = no tint at all)
 const LEAF_TINT_SOFTEN = 0.6;
 const BARK_TINT_SOFTEN = 0.85;
@@ -582,7 +582,7 @@ interface DressingSpot {
 }
 
 const DRESS_STEP = 12;
-const DRESS_DENSITY: Record<BiomeId, number> = { vale: 0.26, marsh: 0.26, peaks: 0.15 };
+const DRESS_DENSITY: Record<BiomeId, number> = { vale: 0.26, steppe: 0.12, marsh: 0.26, peaks: 0.15 };
 
 function dressKindFor(biome: BiomeId, r: number): DressKind {
   if (biome === 'vale') {
@@ -590,6 +590,9 @@ function dressKindFor(biome: BiomeId, r: number): DressKind {
     if (r < 0.46) return 'bushFlowers';
     if (r < 0.8) return 'fern';
     return 'mushroom';
+  }
+  if (biome === 'steppe') {
+    return r < 0.86 ? 'bush' : 'fern';
   }
   if (biome === 'marsh') {
     if (r < 0.3) return 'bush';
@@ -800,6 +803,8 @@ function buildGrassRing(parent: THREE.Group, seed: number): GrassRing {
         if (h < WATER_LEVEL + 1.6) continue;
         // no blades pasted onto cliff faces
         if (tooSteep(x, z, seed)) continue;
+        const biome = zoneBiomeAt(z);
+        if (biome === 'steppe' && r > 0.16) continue;
         let nearHub = false;
         for (const zn of ZONES) {
           if (Math.hypot(x - zn.hub.x, z - zn.hub.z) < 15) { nearHub = true; break; }
@@ -810,7 +815,7 @@ function buildGrassRing(parent: THREE.Group, seed: number): GrassRing {
         q.setFromAxisAngle(up, r * 12.4);
         m.compose(v.set(x, h, z), q, sv.set(s, s, s));
         im.setMatrixAt(n, m);
-        c.setHex(GRASS_TINT[zoneBiomeAt(z)]);
+        c.setHex(GRASS_TINT[biome]);
         c.offsetHSL(
           (hashAt(i, j, 3) - 0.5) * 0.05,
           (hashAt(i, j, 4) - 0.5) * 0.12,

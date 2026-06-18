@@ -493,12 +493,16 @@ export class Hud {
         const h = terrainHeight(x, z, seed);
         const biome = zoneAt(z).biome;
         let r = 58, g = 105, b = 48;
-        if (biome === 'marsh') { r = 64; g = 86; b = 48; }
+        if (biome === 'steppe') { r = 154; g = 135; b = 73; }
+        else if (biome === 'marsh') { r = 64; g = 86; b = 48; }
         else if (biome === 'peaks') { r = 92; g = 100; b = 82; }
         if (h < WATER_LEVEL) { r = 38; g = 84; b = 138; }
         else if (h > 26) { r = 168; g = 172; b = 178; } // ridge / peak rock+snow
         else if (h > 11) { r = 112; g = 110; b = 102; }
-        else if (h > 6) { r = 88; g = 102; b = 62; }
+        else if (h > 6) {
+          if (biome === 'steppe') { r = 176; g = 146; b = 82; }
+          else { r = 88; g = 102; b = 62; }
+        }
         let nearHub = false;
         for (const zn of ZONES) {
           if (Math.hypot(x - zn.hub.x, z - zn.hub.z) < 14) { nearHub = true; break; }

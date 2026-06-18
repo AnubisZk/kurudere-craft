@@ -21,6 +21,7 @@ export const WATER_LEVEL = -4.5;
 // Hill amplitude / base elevation / hub plateau height per biome.
 const BIOME_SHAPE: Record<BiomeId, { hill: number; base: number; hubHeight: number }> = {
   vale: { hill: 26, base: 0, hubHeight: 1.5 },
+  steppe: { hill: 18, base: 0.4, hubHeight: 1.2 },
   marsh: { hill: 11, base: -1.0, hubHeight: 1.2 },
   peaks: { hill: 34, base: 7, hubHeight: 9 },
 };
@@ -180,6 +181,9 @@ export function generateDecorations(seed: number): Decoration[] {
       if (biome === 'vale') {
         if (r > 0.48) continue;
         kind = r < 0.30 ? 'tree' : r < 0.40 ? 'tree2' : 'rock';
+      } else if (biome === 'steppe') {
+        if (r > 0.28) continue;
+        kind = r < 0.05 ? 'tree' : r < 0.08 ? 'tree2' : 'rock';
       } else if (biome === 'marsh') {
         if (r > 0.34) continue;
         kind = r < 0.08 ? 'tree' : r < 0.26 ? 'tree2' : 'rock';

@@ -1,10 +1,10 @@
 // Procedural orchestral soundtrack — no audio files, pure WebAudio synthesis.
 // Inspired by vanilla-WoW zone scoring: a pastoral town theme, a wilderness
-// theme per biome (vale, marsh, peaks), a dread-laden dungeon theme, and a
+// theme per biome (vale, steppe, marsh, peaks), a dread-laden dungeon theme, and a
 // percussion layer that fades in during combat. Each theme is a composed
 // multi-track loop scheduled with a lookahead timer; zone changes crossfade.
 
-export type MusicZone = 'town' | 'vale' | 'marsh' | 'peaks' | 'dungeon';
+export type MusicZone = 'town' | 'vale' | 'steppe' | 'marsh' | 'peaks' | 'dungeon';
 
 type Inst = 'strings' | 'flute' | 'harp' | 'horn' | 'choir' | 'bell' | 'timpani' | 'bass' | 'stacc';
 
@@ -295,12 +295,14 @@ const STORAGE_KEY = 'ev_music_on';
 // center so it never fights the theme underneath:
 //   town  0 → D (town is D major)
 //   vale  7 → A (vale is A dorian; same value the old wilds layer used)
+//   steppe 7 → A (shares the vale theme for now, with a drier visual palette)
 //   marsh 2 → E (marsh is E aeolian; the ostinato becomes E minor pentatonic)
 //   peaks 5 → G (peaks is rooted on G in bare fifths — no third to clash with)
 //   dungeon 0 → D (dungeon is D phrygian)
 const COMBAT_TRANSPOSE: Record<MusicZone, number> = {
   town: 0,
   vale: 7,
+  steppe: 7,
   marsh: 2,
   peaks: 5,
   dungeon: 0,
@@ -355,6 +357,7 @@ export class MusicDirector {
     const themes: Record<string, Theme> = {
       town: composeTown(),
       vale: composeVale(),
+      steppe: composeVale(),
       marsh: composeMarsh(),
       peaks: composePeaks(),
       dungeon: composeDungeon(),

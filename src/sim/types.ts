@@ -247,7 +247,7 @@ export interface DungeonDef {
   leaveText: string;
 }
 
-export type BiomeId = 'vale' | 'marsh' | 'peaks';
+export type BiomeId = 'vale' | 'steppe' | 'marsh' | 'peaks';
 
 export interface ZoneDef {
   id: string;

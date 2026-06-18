@@ -169,7 +169,7 @@ export class Renderer {
     // the environment intensity is rescaled to match the shipped look.
     if (!LOW_GFX) {
       const pmrem = new THREE.PMREMGenerator(this.webgl);
-      for (const b of ['vale', 'marsh', 'peaks'] as BiomeId[]) {
+      for (const b of ['vale', 'steppe', 'marsh', 'peaks'] as BiomeId[]) {
         const eq = this.skyView.envTexture(b);
         if (eq) this.envRTs.set(b, pmrem.fromEquirectangular(eq));
       }
@@ -571,6 +571,7 @@ export class Renderer {
   // player crosses zone bands; low keeps the legacy vale fog everywhere).
   private static BIOME_FOG: Record<BiomeId, { color: number; near: number; far: number }> = {
     vale: { color: 0xa6c6e0, near: 130, far: 470 },
+    steppe: { color: 0xd8c28f, near: 110, far: 430 },
     marsh: { color: 0xa3b294, near: 80, far: 330 },
     peaks: { color: 0xbdd3ec, near: 160, far: 560 },
   };

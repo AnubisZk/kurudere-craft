@@ -93,12 +93,13 @@ const NORMAL_TEX_STRENGTH = 1.35;
 // multiplies into (splat textures are authored near mid-gray).
 const BIOME_PALETTE: Record<BiomeId, { grass: number; grassDark: number; grassYellow: number; dirt: number; sand: number }> = {
   vale: { grass: 0x548545, grassDark: 0x3e6635, grassYellow: 0x768c44, dirt: 0x8a6f47, sand: 0xc2b283 },
+  steppe: { grass: 0x9a9250, grassDark: 0x726b38, grassYellow: 0xc0aa5f, dirt: 0xa47a48, sand: 0xd3bd82 },
   marsh: { grass: 0x596d36, grassDark: 0x41522b, grassYellow: 0x71764a, dirt: 0x6e5a3e, sand: 0x8f7f5c },
   peaks: { grass: 0x687a55, grassDark: 0x4d5c45, grassYellow: 0x8d9168, dirt: 0x7d6a50, sand: 0xb0a486 },
 };
 
 // rock starts creeping in at lower slopes in the peaks, later in the marsh
-const ROCK_SLOPE_START: Record<BiomeId, number> = { vale: 0.55, marsh: 0.62, peaks: 0.45 };
+const ROCK_SLOPE_START: Record<BiomeId, number> = { vale: 0.55, steppe: 0.5, marsh: 0.62, peaks: 0.45 };
 
 const clamp01 = (v: number): number => Math.max(0, Math.min(1, v));
 
@@ -191,6 +192,13 @@ function sampleVertex(x: number, z: number, seed: number): VertexSample {
   cTmp.copy(grassC).lerp(grassDarkC, v);
   const v2 = (Math.sin(x * 0.043 + 5) * Math.cos(z * 0.05 + 2) + 1) / 2;
   cTmp.lerp(grassYellowC, v2 * 0.35);
+  if (biome === 'steppe') {
+    const dry = 0.52 + v2 * 0.28;
+    cTmp.lerp(sandC, dry * 0.55);
+    cTmp.lerp(dirtC, (1 - v) * 0.22);
+    lerpSplat(w, 3, dry * 0.42);
+    lerpSplat(w, 1, (1 - v) * 0.18);
+  }
   // the marsh reads muddier: patches of wet dirt across the lowland
   if (biome === 'marsh') lerpSplat(w, 1, 0.3 * v2 * clamp01((4 - h) / 6));
   // shoreline sand — color and splat weight share one feathered falloff so

@@ -34,19 +34,21 @@ const DOME_RADIUS = 560;
 // samples the same shader, so IBL stays in step.
 const HDRI_TUNE: Record<BiomeId, { gain: number; clamp: number }> = {
   vale: { gain: 0.6, clamp: 2.6 },
+  steppe: { gain: 0.64, clamp: 2.45 },
   marsh: { gain: 0.6, clamp: 2.2 },
   peaks: { gain: 0.48, clamp: 1.7 },
 };
 
 const BIOME_HDRI: Record<BiomeId, string> = {
   vale: '/env/vale_day_2k.hdr',
+  steppe: '/env/vale_day_2k.hdr',
   marsh: '/env/marsh_overcast_2k.hdr',
   peaks: '/env/peaks_dawn_2k.hdr',
 };
 
 // Measured brightest-texel u (sun azimuth in equirect space) per HDRI — see
 // tmp/analyze_hdr.mjs. Used to rotate each map so its sun matches SUN_ANCHOR.
-const HDRI_SUN_U: Record<BiomeId, number> = { vale: 0.595, marsh: 0.657, peaks: 0.631 };
+const HDRI_SUN_U: Record<BiomeId, number> = { vale: 0.595, steppe: 0.595, marsh: 0.657, peaks: 0.631 };
 
 const hdriStore: Partial<Record<BiomeId, THREE.DataTexture>> = {};
 // ~19MB of HDRs — skip when the URL already forces the gradient-dome tier
@@ -164,7 +166,7 @@ export function buildSky(lowGfx: boolean, sunDir: THREE.Vector3): SkyView {
   }
 
   const sun = sunDir.clone().normalize();
-  if (!hdriStore.vale || !hdriStore.marsh || !hdriStore.peaks) {
+  if (!hdriStore.vale || !hdriStore.steppe || !hdriStore.marsh || !hdriStore.peaks) {
     throw new Error('sky HDRIs not preloaded (assetsReady must resolve before buildSky)');
   }
   const tuneVec = (b: BiomeId): THREE.Vector2 =>
