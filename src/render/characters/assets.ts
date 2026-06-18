@@ -251,17 +251,20 @@ export function prepareVisual(key: string): PreparedVisual {
     temp.updateMatrixWorld(true);
   }
 
-  // body bounds from the skinned meshes only (weapons would skew the height)
+  // Body bounds from visible meshes. Skinned rigs use their posed vertices;
+  // static creature props such as Meshy scorpions use ordinary mesh bounds.
   const bounds = new THREE.Box3();
   const v = new THREE.Vector3();
   temp.traverse((o) => {
-    const sm = o as THREE.SkinnedMesh;
-    if (!sm.isSkinnedMesh || !meshChainVisible(sm, temp)) return;
-    const pos = sm.geometry.getAttribute('position');
+    const mesh = o as THREE.Mesh;
+    if (!mesh.isMesh || !meshChainVisible(mesh, temp)) return;
+    const pos = mesh.geometry.getAttribute('position');
+    if (!pos) return;
+    const sm = mesh as THREE.SkinnedMesh;
     for (let i = 0; i < pos.count; i++) {
       v.fromBufferAttribute(pos as THREE.BufferAttribute, i);
-      sm.applyBoneTransform(i, v);
-      v.applyMatrix4(sm.matrixWorld);
+      if (sm.isSkinnedMesh) sm.applyBoneTransform(i, v);
+      v.applyMatrix4(mesh.matrixWorld);
       bounds.expandByPoint(v);
     }
   });

@@ -106,6 +106,10 @@ const SPIDER: ClipMap = {
   attack: ['Spider_Attack'], death: 'Spider_Death', // no hit-react in asset
 };
 
+const STATIC_CREATURE: ClipMap = {
+  idle: '', walk: '', run: '', attack: [], death: '',
+};
+
 // ---------------------------------------------------------------------------
 // Asset urls
 // ---------------------------------------------------------------------------
@@ -200,8 +204,8 @@ export const VISUALS: Record<string, VisualDef> = {
     clips: animal(['Attack_Headbutt']), tint: 'entity', tintStrength: 0.4,
   },
   mob_spider: {
-    url: `${CREATURES}/spider.glb`, height: 1.4,
-    clips: SPIDER, tint: 'entity', tintStrength: 0.35,
+    url: `${CREATURES}/scorpion.glb`, height: 0.95,
+    clips: STATIC_CREATURE, yaw: Math.PI,
   },
   mob_murloc: {
     url: `${CREATURES}/frog.glb`, height: 1.7,
