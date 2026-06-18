@@ -203,6 +203,10 @@ export const VISUALS: Record<string, VisualDef> = {
     url: `${CREATURES}/bull.glb`, height: 1.45,
     clips: animal(['Attack_Headbutt']), tint: 'entity', tintStrength: 0.4,
   },
+  mob_fox: {
+    url: `${CREATURES}/fox.glb`, height: 1.05,
+    clips: animal(['Attack']), tint: 'entity', tintStrength: 0.2,
+  },
   mob_spider: {
     url: `${CREATURES}/scorpion.glb`, height: 0.95,
     clips: STATIC_CREATURE, yaw: Math.PI,
@@ -334,6 +338,7 @@ export const VISUALS: Record<string, VisualDef> = {
 
 const MOB_KEYS: Record<string, string> = {
   wild_boar: 'mob_boar',
+  steppe_fox: 'mob_fox',
   // gravecaller cult + necromancers: dark-robed casters
   gravecaller_cultist: 'mob_dark_caster',
   gravecaller_summoner: 'mob_dark_caster',

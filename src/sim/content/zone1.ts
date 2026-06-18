@@ -65,10 +65,20 @@ export const ZONE1_MOBS: Record<string, MobTemplate> = {
     armorPerLevel: 14, moveSpeed: 7.5, aggroRadius: 9,
     loot: [
       { copper: 12, chance: 1 },
-      { itemId: 'boar_hide', chance: 0.6, questId: 'q_boars' },
+      { itemId: 'boar_hide', chance: 0.85, questId: 'q_boars' },
       { itemId: 'tough_jerky', chance: 0.3 },
     ],
     scale: 0.85, color: 0x935116,
+  },
+  steppe_fox: {
+    id: 'steppe_fox', name: 'Bozkır Tilkisi', minLevel: 1, maxLevel: 3, family: 'beast',
+    hpBase: 24, hpPerLevel: 12, dmgBase: 3, dmgPerLevel: 1.4, attackSpeed: 1.7,
+    armorPerLevel: 8, moveSpeed: 9.5, aggroRadius: 8,
+    loot: [
+      { copper: 10, chance: 1 },
+      { itemId: 'tough_jerky', chance: 0.22 },
+    ],
+    scale: 0.82, color: 0xb66a2c,
   },
   webwood_spider: {
     id: 'webwood_spider', name: 'Kum Akrebi', minLevel: 2, maxLevel: 4, family: 'spider',
@@ -229,9 +239,9 @@ export const ZONE1_QUESTS: Record<string, QuestDef> = {
   q_boars: {
     id: 'q_boars', name: 'Yol Çantası Postları',
     giverNpcId: 'trader_wilkes', turnInNpcId: 'trader_wilkes',
-    text: 'En iyi yol çantaları sağlam domuz derisinden yapılır ve Kurudere\'nin kuru çayırı bu hayvanlarla kaynıyor. Bana 5 Kıllı Domuz Postu getir, zahmetine değsin.',
+    text: 'Domuz artık Kurudere\'de eskisi kadar bol değil; kuru çayırda az sayıda kaldılar. Bana 2 Kıllı Domuz Postu getir, sağlam yol çantası çıkarayım.',
     completionText: 'Ah, ne güzel kıllı postlar! Bunlar iyi para eder.',
-    objectives: [{ type: 'collect', itemId: 'boar_hide', count: 5, label: 'Kıllı Domuz Postu' }],
+    objectives: [{ type: 'collect', itemId: 'boar_hide', count: 2, label: 'Kıllı Domuz Postu' }],
     xpReward: 350, copperReward: 120, itemRewards: {},
   },
   q_spiders: {
@@ -389,14 +399,18 @@ export const ZONE1_QUEST_ORDER = [
 
 export const ZONE1_CAMPS: CampDef[] = [
   // Wolves: north scrubland
-  { mobId: 'forest_wolf', center: { x: -15, z: 55 }, radius: 22, count: 7 },
-  { mobId: 'forest_wolf', center: { x: 20, z: 70 }, radius: 20, count: 6 },
+  { mobId: 'forest_wolf', center: { x: -15, z: 55 }, radius: 24, count: 8 },
+  { mobId: 'forest_wolf', center: { x: 20, z: 70 }, radius: 22, count: 8 },
   { mobId: 'old_greyjaw', center: { x: 0, z: 95 }, radius: 8, count: 1 },
-  // Boars: dry meadow
-  { mobId: 'wild_boar', center: { x: 55, z: 12 }, radius: 22, count: 6 },
-  { mobId: 'wild_boar', center: { x: 80, z: -15 }, radius: 18, count: 5 },
+  // Boars: rare dry-meadow animals
+  { mobId: 'wild_boar', center: { x: 58, z: 14 }, radius: 18, count: 2 },
+  { mobId: 'wild_boar', center: { x: 82, z: -16 }, radius: 14, count: 1 },
+  // Foxes: common steppe scavengers
+  { mobId: 'steppe_fox', center: { x: 48, z: 30 }, radius: 26, count: 6 },
+  { mobId: 'steppe_fox', center: { x: 72, z: -12 }, radius: 22, count: 5 },
   // Scorpions: western rock field
-  { mobId: 'webwood_spider', center: { x: -60, z: 5 }, radius: 22, count: 7 },
+  { mobId: 'webwood_spider', center: { x: -60, z: 5 }, radius: 24, count: 10 },
+  { mobId: 'webwood_spider', center: { x: -46, z: -24 }, radius: 18, count: 5 },
   // Well raiders: dry well northwest
   { mobId: 'mudfin_murloc', center: { x: -75, z: 57 }, radius: 14, count: 8 },
   // Kobolds: mine southwest
@@ -440,7 +454,7 @@ export const ZONE1_OBJECTS: GroundObjectDef[] = [
 // Roads from town toward each hub — used for terrain painting and the map.
 export const ZONE1_ROADS: { x: number; z: number }[][] = [
   [{ x: 0, z: 8 }, { x: -8, z: 30 }, { x: -15, z: 55 }, { x: -2, z: 78 }],          // north to wolves
-  [{ x: 8, z: 2 }, { x: 30, z: 8 }, { x: 55, z: 12 }],                              // east to boars
+  [{ x: 8, z: 2 }, { x: 30, z: 8 }, { x: 55, z: 12 }],                              // east to rare boars and foxes
   [{ x: 6, z: -6 }, { x: 30, z: -30 }, { x: 50, z: -50 }, { x: 65, z: -65 }],       // southeast to bandits
   [{ x: -8, z: 6 }, { x: -35, z: 25 }, { x: -58, z: 48 }, { x: -66, z: 58 }],       // northwest to lake
   [{ x: -6, z: -6 }, { x: -30, z: -28 }, { x: -55, z: -45 }, { x: -70, z: -55 }],   // southwest to mine
