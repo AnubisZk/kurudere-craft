@@ -90,6 +90,11 @@ const PROP_ASSET_DEFS: Record<string, PropAssetDef> = {
   anvil: { url: '/models/props/anvil.glb', kit: 'qprops' },
   weaponStand: { url: '/models/props/weapon_stand.glb', kit: 'qprops' },
   lanternWall: { url: '/models/props/lantern_wall.glb', kit: 'qprops' },
+  kurudereHan: { url: '/models/props/kurudere/kurudere_han.glb', kit: 'kurudere' },
+  kurudereHouse: { url: '/models/props/kurudere/dry_village_house.glb', kit: 'kurudere' },
+  kurudereWell: { url: '/models/props/kurudere/old_stone_well.glb', kit: 'kurudere' },
+  kurudereCart: { url: '/models/props/kurudere/broken_caravan_cart.glb', kit: 'kurudere' },
+  kurudereBush: { url: '/models/props/kurudere/dry_steppe_bush.glb', kit: 'kurudere' },
 };
 
 type PropKey = keyof typeof PROP_ASSET_DEFS;
@@ -322,7 +327,10 @@ export function buildProps(seed: number): PropsResult {
 
   // ---- buildings: village houses / inn / composed chapel ------------------
   const housePool: PropKey[] = ['house1', 'house2', 'blacksmith'];
-  const houseHeight: Record<string, number> = { house1: 8.0, house2: 7.6, blacksmith: 6.6, inn: 7.6 };
+  const houseHeight: Record<string, number> = {
+    house1: 8.0, house2: 7.6, blacksmith: 6.6, inn: 7.6,
+    kurudereHouse: 3.2, kurudereHan: 4.1,
+  };
 
   for (const b of PROPS.buildings) {
     const key = b.x * 13.7 + b.z * 3.1;
@@ -346,7 +354,10 @@ export function buildProps(seed: number): PropsResult {
       group.add(shadowed(g));
       continue;
     }
-    const asset: PropKey = b.kind === 'inn' ? 'inn' : housePool[Math.floor(keyRand(key, 3) * 0.999 * housePool.length)];
+    const inKurudere = b.z >= -180 && b.z < 180;
+    const asset: PropKey = inKurudere
+      ? (b.kind === 'inn' ? 'kurudereHan' : 'kurudereHouse')
+      : (b.kind === 'inn' ? 'inn' : housePool[Math.floor(keyRand(key, 3) * 0.999 * housePool.length)]);
     const a = propAsset(asset);
     const g = new THREE.Group();
     addParts(g, asset, { scale: [b.w / a.size.x, houseHeight[asset] / a.size.y, b.d / a.size.z] });
@@ -381,8 +392,10 @@ export function buildProps(seed: number): PropsResult {
   // ---- wells ---------------------------------------------------------------
   for (const w of PROPS.wells) {
     const g = new THREE.Group();
-    const a = propAsset('well');
-    addParts(g, 'well', { scale: [2.6 / a.size.x, 3.6 / a.size.y, 2.9 / a.size.z] });
+    const inKurudere = w.z >= -180 && w.z < 180;
+    const wellKey: PropKey = inKurudere ? 'kurudereWell' : 'well';
+    const a = propAsset(wellKey);
+    addParts(g, wellKey, { scale: [2.6 / a.size.x, 3.6 / a.size.y, 2.9 / a.size.z] });
     g.position.set(w.x, ground(w.x, w.z) - 0.1, w.z);
     g.rotation.y = propRand(w.x, w.z, 1) * Math.PI;
     group.add(shadowed(g));
@@ -457,12 +470,35 @@ export function buildProps(seed: number): PropsResult {
 
   // ---- crates: camp clutter (wooden crate / barrel mix), instanced ---------
   PROPS.crates.forEach(([x, z], i) => {
+    if (z >= -180 && z < 180 && i === 2) {
+      const a = propAsset('kurudereCart');
+      const s = 4.4 / Math.max(a.size.x, a.size.z);
+      addInstance('kurudereCart', x + 1.4, ground(x, z) - 0.04, z - 1.2, new THREE.Euler(
+        -0.04, 0.65 + propRand(x, z, 8) * 0.5, -0.12,
+      ), [s, s * 1.15, s]);
+      return;
+    }
     const kind: PropKey = i % 3 === 2 ? 'barrel' : 'crateWooden';
     const s = kind === 'barrel' ? 1.25 : 1.3 + propRand(x, z, 5) * 0.15;
     addInstance(kind, x, ground(x, z) - 0.04, z, new THREE.Euler(
       (propRand(x, z, 7) - 0.5) * 0.05, ((x * 13 + z * 7) % 1) * Math.PI, 0,
     ), s);
   });
+
+  // ---- Kurudere dry brush clusters near town and dusty road ---------------
+  const kurudereBrush = [
+    [-18, 24], [-24, 36], [20, 31], [34, -18], [48, -42],
+    [58, -78], [73, -55], [-42, 12], [-68, 8], [-92, 70],
+  ] as [number, number][];
+  for (const [x, z] of kurudereBrush) {
+    const a = propAsset('kurudereBush');
+    const s = (1.25 + propRand(x, z, 11) * 0.9) / Math.max(a.size.x, a.size.z);
+    addInstance('kurudereBush', x, ground(x, z) - 0.03, z, new THREE.Euler(
+      (propRand(x, z, 12) - 0.5) * 0.05,
+      propRand(x, z, 13) * Math.PI * 2,
+      (propRand(x, z, 14) - 0.5) * 0.05,
+    ), [s, s * (0.8 + propRand(x, z, 15) * 0.35), s]);
+  }
 
   // ---- murloc mud huts: giant swamp mushrooms, doorway facing camp center --
   const hutCenter = PROPS.mudHuts.reduce(
