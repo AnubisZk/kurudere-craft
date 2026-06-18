@@ -314,6 +314,7 @@ export class MusicDirector {
   private reverb: ConvolverNode | null = null;
   private reverbSend: GainNode | null = null;
   private layers: Record<string, Layer> = {};
+  private audioThemes: Partial<Record<MusicZone, HTMLAudioElement>> = {};
   private timer: number | undefined;
   // null until the first update() so the initial state always applies — a
   // 'town' sentinel matched the real starting zone and left spawn silent
@@ -357,7 +358,6 @@ export class MusicDirector {
     const themes: Record<string, Theme> = {
       town: composeTown(),
       vale: composeVale(),
-      steppe: composeVale(),
       marsh: composeMarsh(),
       peaks: composePeaks(),
       dungeon: composeDungeon(),
@@ -370,6 +370,7 @@ export class MusicDirector {
       gain.connect(this.reverbSend);
       this.layers[name] = { theme, gain, target: 0, anchor: 0, nextIdx: -1, loopCount: 0, transpose: 0 };
     }
+    this.audioThemes.steppe = this.createAudioTheme('/audio/reed_and_copper.mp3');
     this.timer = window.setInterval(() => this.tickScheduler(), 110);
   }
 
@@ -380,6 +381,10 @@ export class MusicDirector {
     } catch { /* private mode */ }
     if (this.ctx && this.master) {
       this.master.gain.setTargetAtTime(on ? 0.15 : 0, this.ctx.currentTime, 0.3);
+    }
+    for (const [zone, audio] of Object.entries(this.audioThemes) as [MusicZone, HTMLAudioElement][]) {
+      audio.volume = on && this.zone === zone ? this.audioVolumeFor(zone, this.combat) : 0;
+      if (!on) audio.pause();
     }
   }
 
@@ -399,6 +404,7 @@ export class MusicDirector {
         layer.gain.gain.setTargetAtTime(target, now, FADE_SECONDS / 3);
       }
     }
+    this.updateAudioThemes(zone, inCombat);
     const combatLayer = this.layers.combat;
     // ostinato follows the zone's tonal center (see COMBAT_TRANSPOSE) — kept
     // current on every zone crossing, not just when combat starts, so being
@@ -408,6 +414,33 @@ export class MusicDirector {
     if (combatLayer.target !== combatTarget) {
       combatLayer.target = combatTarget;
       combatLayer.gain.gain.setTargetAtTime(combatTarget, now, inCombat ? 0.35 : FADE_SECONDS / 3);
+    }
+  }
+
+  private createAudioTheme(src: string): HTMLAudioElement {
+    const audio = new Audio(src);
+    audio.loop = true;
+    audio.preload = 'auto';
+    audio.volume = 0;
+    return audio;
+  }
+
+  private audioVolumeFor(_zone: MusicZone, inCombat: boolean): number {
+    return this._enabled ? (inCombat ? 0.07 : 0.16) : 0;
+  }
+
+  private updateAudioThemes(zone: MusicZone, inCombat: boolean): void {
+    for (const [key, audio] of Object.entries(this.audioThemes) as [MusicZone, HTMLAudioElement][]) {
+      const active = this._enabled && key === zone;
+      audio.volume = active ? this.audioVolumeFor(key, inCombat) : 0;
+      if (active) {
+        audio.play().catch(() => {
+          // Browsers may block playback until the next user gesture; update()
+          // will try again after the player interacts.
+        });
+      } else {
+        audio.pause();
+      }
     }
   }
 
