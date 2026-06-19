@@ -315,6 +315,7 @@ export class MusicDirector {
   private reverbSend: GainNode | null = null;
   private layers: Record<string, Layer> = {};
   private audioThemes: Partial<Record<MusicZone, HTMLAudioElement>> = {};
+  private combatAudio: HTMLAudioElement | null = null;
   private timer: number | undefined;
   // null until the first update() so the initial state always applies — a
   // 'town' sentinel matched the real starting zone and left spawn silent
@@ -371,6 +372,7 @@ export class MusicDirector {
       this.layers[name] = { theme, gain, target: 0, anchor: 0, nextIdx: -1, loopCount: 0, transpose: 0 };
     }
     this.audioThemes.steppe = this.createAudioTheme('/audio/reed_and_copper.mp3');
+    this.combatAudio = this.createAudioTheme('/audio/ambush_in_the_reeds.mp3');
     this.timer = window.setInterval(() => this.tickScheduler(), 110);
   }
 
@@ -385,6 +387,10 @@ export class MusicDirector {
     for (const [zone, audio] of Object.entries(this.audioThemes) as [MusicZone, HTMLAudioElement][]) {
       audio.volume = on && this.zone === zone ? this.audioVolumeFor(zone, this.combat) : 0;
       if (!on) audio.pause();
+    }
+    if (this.combatAudio) {
+      this.combatAudio.volume = on && this.combat ? this.combatAudioVolume() : 0;
+      if (!on) this.combatAudio.pause();
     }
   }
 
@@ -410,11 +416,12 @@ export class MusicDirector {
     // current on every zone crossing, not just when combat starts, so being
     // chased across a border can't leave it in the previous zone's key
     if (inCombat) combatLayer.transpose = COMBAT_TRANSPOSE[zone];
-    const combatTarget = inCombat ? 1 : 0;
+    const combatTarget = this.combatAudio ? 0 : (inCombat ? 1 : 0);
     if (combatLayer.target !== combatTarget) {
       combatLayer.target = combatTarget;
       combatLayer.gain.gain.setTargetAtTime(combatTarget, now, inCombat ? 0.35 : FADE_SECONDS / 3);
     }
+    this.updateCombatAudio(inCombat);
   }
 
   private createAudioTheme(src: string): HTMLAudioElement {
@@ -429,6 +436,10 @@ export class MusicDirector {
     return this._enabled ? (inCombat ? 0.07 : 0.16) : 0;
   }
 
+  private combatAudioVolume(): number {
+    return this._enabled ? 0.18 : 0;
+  }
+
   private updateAudioThemes(zone: MusicZone, inCombat: boolean): void {
     for (const [key, audio] of Object.entries(this.audioThemes) as [MusicZone, HTMLAudioElement][]) {
       const active = this._enabled && key === zone;
@@ -441,6 +452,20 @@ export class MusicDirector {
       } else {
         audio.pause();
       }
+    }
+  }
+
+  private updateCombatAudio(inCombat: boolean): void {
+    const audio = this.combatAudio;
+    if (!audio) return;
+    const active = this._enabled && inCombat;
+    audio.volume = active ? this.combatAudioVolume() : 0;
+    if (active) {
+      audio.play().catch(() => {
+        // Browsers may block playback until the next user gesture.
+      });
+    } else {
+      audio.pause();
     }
   }
 
