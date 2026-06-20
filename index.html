@@ -385,14 +385,23 @@
     .start-figure { display: none; }
     .start-sun { width: 92px; height: 92px; }
   }
+  #start-screen h1 {
+    margin: 0 0 8px; border-radius: 36px;
+    background:
+      radial-gradient(ellipse at 50% 54%, #6f542744 0 36%, #a06e3626 56%, transparent 76%);
+    box-shadow: 0 16px 34px #0004;
+  }
   .brand-logo-img {
-    width: min(760px, 88vw); height: auto; margin-bottom: 8px; display: block;
-    border-radius: 42px; mix-blend-mode: screen;
-    filter: saturate(1.08) contrast(1.04);
+    width: min(700px, 86vw); height: auto; display: block;
+    border-radius: 36px; mix-blend-mode: screen; opacity: .96;
+    filter: saturate(1.08) contrast(1.05);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 52%, #000 0 54%, #000c 67%, transparent 96%);
+    mask-image: radial-gradient(ellipse at 50% 52%, #000 0 54%, #000c 67%, transparent 96%);
     pointer-events: none; user-select: none;
   }
   @media (max-width: 780px) {
-    .brand-logo-img { width: min(620px, 92vw); margin-bottom: 4px; border-radius: 28px; }
+    #start-screen h1 { margin-bottom: 4px; border-radius: 26px; }
+    .brand-logo-img { width: min(600px, 92vw); border-radius: 26px; }
   }
   #brand-subtitle { margin-bottom: 26px; color: #d8c89a; font-family: var(--title-font);
     font-size: 15px; letter-spacing: 1.6px; text-shadow: 1px 1px 2px #000; }
