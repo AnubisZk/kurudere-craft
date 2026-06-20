@@ -11,6 +11,7 @@
 <title>World of AnatolianCraft</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>⚔️</text></svg>" />
 <link rel="preload" as="image" href="/anatoliancraft-logo.png" />
+<link rel="preload" as="image" href="/anatoliancraft-logo-transparent.png" />
 <link rel="preload" as="image" href="/loading-screen.jpg" />
 <style>
   :root {
@@ -388,9 +389,7 @@
   }
   #start-screen h1 {
     margin: 0 0 8px; border-radius: 36px;
-    background:
-      radial-gradient(ellipse at 50% 54%, #6f542724 0 28%, #a06e3612 54%, transparent 84%);
-    box-shadow: 0 12px 26px #0002;
+    background: transparent; box-shadow: none;
   }
   .brand-logo-img {
     width: min(700px, 86vw); height: auto; display: block;
@@ -400,9 +399,15 @@
     mask-image: radial-gradient(ellipse at 50% 52%, #000 0 50%, #000b 64%, transparent 100%);
     pointer-events: none; user-select: none;
   }
+  .brand-logo-transparent-img {
+    width: min(700px, 86vw); border-radius: 0; mix-blend-mode: normal; opacity: 1;
+    filter: saturate(1.1) contrast(1.05) drop-shadow(0 10px 18px #000b);
+    -webkit-mask-image: none; mask-image: none;
+  }
   @media (max-width: 780px) {
     #start-screen h1 { margin-bottom: 4px; border-radius: 26px; }
     .brand-logo-img { width: min(600px, 92vw); border-radius: 26px; }
+    .brand-logo-transparent-img { width: min(600px, 92vw); border-radius: 0; }
   }
   #brand-subtitle { margin-bottom: 26px; color: #d8c89a; font-family: var(--title-font);
     font-size: 15px; letter-spacing: 1.6px; text-shadow: 1px 1px 2px #000; }
@@ -641,7 +646,7 @@
       <div class="start-figure"></div>
       <div class="start-dust"></div>
     </div>
-    <h1 aria-label="World of AnatolianCraft"><img class="brand-logo-img" src="/anatoliancraft-logo.png" alt="World of AnatolianCraft" draggable="false" /></h1>
+    <h1 aria-label="World of AnatolianCraft"><img class="brand-logo-img brand-logo-transparent-img" src="/anatoliancraft-logo-transparent.png" alt="World of AnatolianCraft" draggable="false" /></h1>
     <div id="brand-subtitle">Kurudere Bozkırı</div>
 
     <div id="mode-select">
