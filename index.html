@@ -315,19 +315,20 @@
   #start-screen > :not(.start-world) { position: relative; z-index: 2; }
   .start-world { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
     background:
+      url('/start-screen-kurudere.png') center / cover no-repeat,
       linear-gradient(180deg, #2f4f67 0%, #c28e55 35%, #8b6b3a 53%, #2b2417 100%);
     perspective: 900px; transform-style: preserve-3d; }
   .start-world::before { content: ""; position: absolute; inset: 0;
     background:
-      radial-gradient(circle at 50% 24%, #ffe2a088 0 7%, #d17f3155 12%, transparent 25%),
-      radial-gradient(ellipse at 50% 46%, #ffe9b733 0 13%, transparent 44%),
-      linear-gradient(180deg, #0b152100 0%, #15100b22 55%, #080605cc 100%);
-    mix-blend-mode: screen; opacity: .86; }
+      radial-gradient(ellipse at 50% 36%, transparent 0 36%, #0505064d 72%, #030303b8 100%),
+      linear-gradient(180deg, #02030422 0%, transparent 34%, #0403029c 100%);
+    opacity: .95; }
   .start-world::after { content: ""; position: absolute; inset: 0;
     background:
-      radial-gradient(ellipse at 50% 42%, transparent 0 38%, #050506a8 82%),
-      linear-gradient(180deg, #00000022 0%, transparent 28%, #00000088 100%);
-    box-shadow: inset 0 0 150px #000; }
+      radial-gradient(ellipse at 50% 42%, transparent 0 45%, #05050678 86%),
+      linear-gradient(180deg, #00000010 0%, transparent 34%, #00000078 100%);
+    box-shadow: inset 0 0 130px #000; }
+  .start-world > * { display: none; }
   .start-sun { position: absolute; left: 50%; top: 20%; width: 120px; height: 120px;
     transform: translate(-50%, -50%); border-radius: 50%;
     background: radial-gradient(circle, #fff0b8 0 18%, #f1b35e 42%, #bd5a2f00 70%);
@@ -388,8 +389,8 @@
   #start-screen h1 {
     margin: 0 0 8px; border-radius: 36px;
     background:
-      radial-gradient(ellipse at 50% 54%, #6f542734 0 32%, #a06e361c 54%, transparent 82%);
-    box-shadow: 0 14px 30px #0003;
+      radial-gradient(ellipse at 50% 54%, #6f542724 0 28%, #a06e3612 54%, transparent 84%);
+    box-shadow: 0 12px 26px #0002;
   }
   .brand-logo-img {
     width: min(700px, 86vw); height: auto; display: block;
